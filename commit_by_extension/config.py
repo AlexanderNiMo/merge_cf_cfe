@@ -9,6 +9,7 @@ class Config:
 
         self.extension_dir = pathlib.Path(conf_parser.get('path', 'extension_dir')).absolute().resolve()
         self.temp_dir = pathlib.Path(conf_parser.get('path', 'temp_dir')).absolute().resolve()
+        self.base_xml = pathlib.Path(conf_parser.get('path', 'base_xml')).absolute().resolve()
 
         self.base_user = conf_parser.get('base', 'user')
         self.base_password = conf_parser.get('base', 'password')

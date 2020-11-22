@@ -58,11 +58,9 @@ class MainTest(unittest.TestCase):
         )
 
     def test_prepare_env(self):
-        tmp_designer, extension_xml_dir, main_xml_path = commit.prepare_env(
+        tmp_designer, extension_xml_dir = commit.prepare_env(
             self.config.temp_dir, self.config.platform_version)
 
-        self.assertTrue(Path(main_xml_path).exists(), 'Не создана папка для выгрузки'
-                                                      ' основной конфы в xml')
         self.assertTrue(Path(extension_xml_dir).exists(), 'Не создана папка для выгрузки'
                                                           ' основной конфы в xml')
         self.assertTrue(Path(f'{self.config.temp_dir}/tmp_base').exists(), 'Не создана папка для базы'
@@ -70,7 +68,6 @@ class MainTest(unittest.TestCase):
 
     def test_main(self):
         commit.main(self.config)
-        a=1
 
     def tearDown(self) -> None:
         utils.clear_folder(self.config.temp_dir)
@@ -124,7 +121,6 @@ class TestMerging(unittest.TestCase):
         utils.clear_folder(self.tmp_cf_xml)
         self.tmp_cf_xml.rmdir()
         utils.clear_folder(self.temp_dir)
-        self.temp_dir.rmdir()
 
 
 if __name__ == '__main__':

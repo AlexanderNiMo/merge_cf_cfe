@@ -16,11 +16,13 @@ def main(config: conf.Config):
     extensions = get_extensions(config.extension_dir)
 
     if not extensions:
-        logger.info('Не обнаруженно расширений.')
+        logger.info('Файлы расширений не обнаруженны.')
         return
 
     designer = create_designer(config)
-    tmp_designer, extension_xml_dir, main_xml_path = prepare_env(config.temp_dir, config.platform_version)
+
+    tmp_designer, extension_xml_dir = prepare_env(config.temp_dir, config.platform_version)
+    main_xml_path = config.base_xml
 
     p = Process(target=update_main_base_from_repo, args=(designer, main_xml_path))
     p.start()
@@ -32,7 +34,7 @@ def main(config: conf.Config):
         xml_extension_paths.append(extension_xml_dir.joinpath(extension.name))
     tmp_designer.dump_extensions_to_files(extension_xml_dir)
 
-    p.join()
+    result = p.join()
 
     os.remove(main_xml_path.joinpath('ConfigDumpInfo.xml'))
 
@@ -49,6 +51,9 @@ def main(config: conf.Config):
             result = p.join()
         p = Process(target=make_commit, args=(designer, cf_path, merge_settings, object_list))
         p.start()
+
+    if p is not None:
+        result = p.join()
 
 
 def update_main_base_from_repo(designer: api.Designer, main_xml_path: pathlib.Path):
@@ -73,10 +78,6 @@ def prepare_env(temp_dir_path: str, v8_version: str) -> (api.Designer, pathlib.P
     if not temp_dir.exists():
         temp_dir.mkdir()
 
-    main_xml_path = temp_dir.joinpath('main_xml_base')
-    if not main_xml_path.exists():
-        main_xml_path.mkdir()
-
     extension_xml_dir = temp_dir.joinpath('extension_xml')
     if not extension_xml_dir.exists():
         extension_xml_dir.mkdir()
@@ -88,7 +89,7 @@ def prepare_env(temp_dir_path: str, v8_version: str) -> (api.Designer, pathlib.P
     tmp_connection = api.Connection(file_path=temp_base_path)
     tmp_designer = api.Designer(platform_version=v8_version, connection=tmp_connection)
 
-    return tmp_designer, extension_xml_dir, main_xml_path
+    return tmp_designer, extension_xml_dir
 
 
 def get_extensions(path: str) -> List[pathlib.Path]:
