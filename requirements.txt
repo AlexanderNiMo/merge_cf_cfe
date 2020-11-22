@@ -1,0 +1,2 @@
+designer_cmd >= 0.1.2
+git+git://github.com/AlexanderNiMo/mdclasses_1c.git

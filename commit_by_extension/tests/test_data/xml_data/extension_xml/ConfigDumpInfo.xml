@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ConfigDumpInfo xmlns="http://v8.1c.ru/8.3/xcf/dumpinfo" xmlns:xen="http://v8.1c.ru/8.3/xcf/enums" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" format="Hierarchical" version="2.11">
+	<ConfigVersions>
+		<Metadata name="Catalog.Справочник1" id="764cd00e-8eee-4bff-a853-be8eb9f4188d" configVersion="5fb78c58d61c53ed4dfc9c113c7f0d7641039e50"/>
+		<Metadata name="Catalog.Справочник1.ManagerModule" id="764cd00e-8eee-4bff-a853-be8eb9f4188d.3" configVersion="cd0952e124079ad08ff8749f26446f44dd1ea992"/>
+		<Metadata name="Catalog.Справочник1.ObjectModule" id="764cd00e-8eee-4bff-a853-be8eb9f4188d.0" configVersion="7798ae17bdbeacab0fb9c72139aedf86e1b92c27"/>
+		<Metadata name="Configuration.catalog_module" id="1dbe2303-99a5-4039-84fb-0eb322f22aaf" configVersion="8458e71991657c293d8f762c26739c9311403499"/>
+		<Metadata name="Language.Русский" id="7b0e0c5d-e4db-4a65-8ce3-d74be5e8f891" configVersion="2b023ea98823cd63921407c50975c44d6bcf8b28"/>
+		<Metadata name="Role.cat_m_ОсновнаяРоль" id="2c38451c-1d38-4e7f-b62b-31ff4e986070" configVersion="20e59d784386dcbb8e9327efa861fa5111d11e9a"/>
+	</ConfigVersions>
+</ConfigDumpInfo>
