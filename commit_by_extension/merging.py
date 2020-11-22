@@ -4,6 +4,11 @@ from typing import Optional, Union
 from commit_by_extension.utils import clear_folder
 import shutil
 from lxml import etree
+import re
+
+
+class MergeError(Exception):
+    pass
 
 
 class Merger:
@@ -42,19 +47,24 @@ class Merger:
 
         self.read_data()
 
-        for obj in self._extension.conf_objects:
-            if obj.obj_type == mdclasses.ObjectType.LANGUAGE:
-                continue
-            try:
-                main_obj = self._main_conf.get_object(obj.name, obj.obj_type)
-            except IndexError:
-                if obj.obj_type != mdclasses.ObjectType.ROLE:
-                    add_object_to_conf(self._main_conf, obj)
-                    self.add_object_to_confs(obj)
-                continue
+        try:
 
-            self.merge_objects(main_obj, obj)
-            self.add_object_to_confs(main_obj)
+            for obj in self._extension.conf_objects:
+                if obj.obj_type == mdclasses.ObjectType.LANGUAGE:
+                    continue
+                try:
+                    main_obj = self._main_conf.get_object(obj.name, obj.obj_type)
+                except IndexError:
+                    if obj.obj_type != mdclasses.ObjectType.ROLE:
+                        add_object_to_conf(self._main_conf, obj)
+                        self.add_object_to_confs(obj)
+                    continue
+
+                self.merge_objects(main_obj, obj)
+                self.add_object_to_confs(main_obj)
+
+        except NotImplementedError as ex:
+            raise MergeError(f'Ошибка объединения модулей {ex.args[0]}')
 
         return self.merge_settings, self.object_list, self.list_files
 
@@ -221,7 +231,35 @@ class Merger:
                 0
             )
         else:
-            raise NotImplementedError(f'Объединение вызова {sourse.expansion_modifier.modifier_type} не реализовано')
+            self.merge_union(resiver, sourse)
+
+    def merge_function(self, resiver: mdclasses.Procedure, sourse: mdclasses.Procedure):
+        modifier_type = sourse.expansion_modifier.modifier_type
+        sourse.expansion_modifier = None
+
+        if modifier_type.upper() == 'Вместо'.upper():
+            self.merge_union(resiver, sourse)
+        else:
+            raise NotImplementedError(f'Функции поддерживают только режим Вместо, найден режим {modifier_type}')
+
+    def merge_union(self, resiver: mdclasses.Procedure, sourse: mdclasses.Procedure):
+        continue_all = 'ПродолжитьВызов('
+        continue_call_re = re.compile('', re.IGNORECASE)
+
+        if continue_all.upper() in sourse.text.upper():
+            sourse.name = resiver.name
+            resiver.name = f'changed_{resiver.name}'
+            for el in sourse.elements:
+                if isinstance(el, mdclasses.TextData) and continue_all.upper() in el.text:
+                    el.text_data = continue_call_re.sub(el.text, f'{resiver.name}(')
+        else:
+            resiver.clear_sub_elements()
+            insert_text_to_module(
+                resiver,
+                f'#Область {resiver.name}_ИмпортИзРасширения_{self._extension_name}',
+                f'\t{sourse.call_text}\n',
+                1
+            )
 
     def add_module(self, obj: mdclasses.ConfObject, module: mdclasses.Module):
         """

@@ -4,10 +4,11 @@ import pathlib
 import logging
 import os
 from typing import List
-from commit_by_extension.merging import Merger
+from commit_by_extension.merging import Merger, MergeError
 from multiprocessing import Process
 
-logging.basicConfig(filename='./working.log', level=logging.INFO)
+handlers = [logging.FileHandler('./working.log', encoding='utf-8')]
+logging.basicConfig(level=logging.INFO, handlers=handlers)
 logger = logging.getLogger(__file__)
 
 
@@ -36,15 +37,21 @@ def main(config: conf.Config):
 
     result = p.join()
 
-    os.remove(main_xml_path.joinpath('ConfigDumpInfo.xml'))
+    conf_dump = main_xml_path.joinpath('ConfigDumpInfo.xml')
+    if conf_dump.exists():
+        os.remove(conf_dump)
 
     p = None
 
     for xml_extension_path in xml_extension_paths:
         merger = Merger(main_xml_path, xml_extension_path, config.temp_dir)
-        merge_settings, object_list, list_files = merger.merge()
+        try:
+            merge_settings, object_list, list_files = merger.merge()
+        except MergeError:
+            logger.error(f'При слиянии расширения {xml_extension_path.stem} произошла ошибка {MergeError}, '
+                         f'расширение не будет бъединено')
 
-        cf_path = config.temp_dir.joinpath(f'{xml_extension_path.name}.cf')
+        cf_path = config.temp_dir.joinpath(f'{xml_extension_path.stem}.cf')
         convert_xml_to_cf(tmp_designer, main_xml_path, cf_path, list_files)
 
         if p is not None:

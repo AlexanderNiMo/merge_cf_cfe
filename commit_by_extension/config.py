@@ -31,6 +31,6 @@ def get_config(conf_file: typing.Optional[pathlib.Path] = None):
         conf_path = '../../config.example.ini'
 
     parser = configparser.ConfigParser()
-    parser.read(pathlib.Path(conf_path).resolve())
+    parser.read(pathlib.Path(conf_path).resolve(), encoding='utf-8')
 
     return Config(parser)

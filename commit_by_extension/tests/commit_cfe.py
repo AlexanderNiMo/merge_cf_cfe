@@ -4,6 +4,11 @@ import mdclasses
 from pathlib import Path
 from designer_cmd import api
 import shutil
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logging.root.removeHandler(logging.root.handlers[0])
+logging.root.addHandler(logging.StreamHandler())
 
 
 class MainTest(unittest.TestCase):
@@ -43,9 +48,11 @@ class MainTest(unittest.TestCase):
         tmp_base.rmdir()
 
     def prepare_base(self, repo_connection):
-        connection = api.Connection(self.config.base_user, self.config.base_password, str(self.config.base_path))
+        connection = api.Connection('', '', str(self.config.base_path))
         designer = api.Designer(self.config.platform_version, connection, repo_connection)
         designer.create_base()
+        designer.load_db_from_file(self.dt_path)
+        designer.connection = api.Connection(self.config.base_user, self.config.base_password, str(self.config.base_path))
         designer.bind_cfg_to_repo()
         designer.update_conf_from_repo()
         designer.update_db_config()
