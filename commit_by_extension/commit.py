@@ -9,7 +9,7 @@ from multiprocessing import Process
 
 handlers = [logging.FileHandler('./working.log', encoding='utf-8')]
 logging.basicConfig(level=logging.INFO, handlers=handlers)
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 
 def main(config: conf.Config):
@@ -30,10 +30,12 @@ def main(config: conf.Config):
 
     xml_extension_paths = []
 
+    logger.info(f'Начало выгрузки расширений в xml')
     for extension in extensions:
         tmp_designer.load_extension_from_file(str(extension.absolute().resolve()), extension.name)
         xml_extension_paths.append(extension_xml_dir.joinpath(extension.name))
     tmp_designer.dump_extensions_to_files(extension_xml_dir)
+    logger.info(f'Окнончание выгрузки расширений в xml')
 
     result = p.join()
 
@@ -44,15 +46,20 @@ def main(config: conf.Config):
     p = None
 
     for xml_extension_path in xml_extension_paths:
+        logger.info(f'Начало слияния расширения {xml_extension_path.stem}')
         merger = Merger(main_xml_path, xml_extension_path, config.temp_dir)
         try:
             merge_settings, object_list, list_files = merger.merge()
         except MergeError:
             logger.error(f'При слиянии расширения {xml_extension_path.stem} произошла ошибка {MergeError}, '
-                         f'расширение не будет бъединено')
+                         f'расширение не будет объединено')
+            continue
 
         cf_path = config.temp_dir.joinpath(f'{xml_extension_path.stem}.cf')
+        logger.info(f'Преобразование объединенной xml выгрузки основной конфигурации и расширения'
+                    f' {xml_extension_path.stem} в cf')
         convert_xml_to_cf(tmp_designer, main_xml_path, cf_path, list_files)
+        logger.info(f'Преобразование объединенной xml выгрузки {xml_extension_path.stem} завершено')
 
         if p is not None:
             result = p.join()
@@ -64,23 +71,29 @@ def main(config: conf.Config):
 
 
 def update_main_base_from_repo(designer: api.Designer, main_xml_path: pathlib.Path):
+    logger.info(f'Обновление основной базы на последнюю версию хранилища')
     designer.update_conf_from_repo()
     designer.dump_config_to_files(str(main_xml_path))
+    logger.info(f'Основная база обновлена из хранилища')
 
 
 def convert_xml_to_cf(designer, xml_path: pathlib.Path, cf_path: pathlib.Path, list_files: pathlib.Path):
+    designer.manage_support()
     designer.load_config_from_files(str(xml_path), str(list_files))
     designer.dump_config_to_file(str(cf_path))
 
 
 def make_commit(designer: api.Designer, cf_path: pathlib.Path, merge_settings: pathlib.Path, object_list: pathlib.Path):
+    logger.info(f'Начало отправки изменений в хранлище')
     designer.lock_objects_in_repository(str(object_list))
     designer.merge_config_with_file(str(cf_path), str(merge_settings))
     designer.commit_config_to_repo(f'Слияние c расширением {cf_path.name}', str(object_list))
     designer.unlock_objects_in_repository(str(object_list))
+    logger.info(f'Изменения помещены в хранилище')
 
 
 def prepare_env(temp_dir_path: str, v8_version: str) -> (api.Designer, pathlib.Path, pathlib.Path):
+    logger.info(f'Подготовка временныех каталогов')
     temp_dir = pathlib.Path(temp_dir_path)
     if not temp_dir.exists():
         temp_dir.mkdir()
@@ -100,7 +113,7 @@ def prepare_env(temp_dir_path: str, v8_version: str) -> (api.Designer, pathlib.P
 
 
 def get_extensions(path: str) -> List[pathlib.Path]:
-
+    logger.info(f'Поиск расширений в папке {path}')
     res = []
 
     ext_dir = pathlib.Path(path)
@@ -133,5 +146,7 @@ def create_designer(config: conf.Config) -> api.Designer:
     if conn is None:
         logger.error('Не удалось определить парметры подключения к БД!')
         raise ValueError('Не удалось определить парметры подключения к БД')
+
+    logger.info(f'Создание конфигуратора с прааметрами base: {conn} repo: {repo_connection}')
 
     return api.Designer(config.platform_version, connection=conn, repo_connection=repo_connection)

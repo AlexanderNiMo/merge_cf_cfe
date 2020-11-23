@@ -30,6 +30,9 @@ class Merger:
         self.object_list = temp_dir.joinpath(f'{self._extension_name}_object_list.xml')
         self.list_files = temp_dir.joinpath(f'{self._extension_name}_changed_files.lst')
 
+        self._files = []
+        self._objects = []
+
         self.version = '1.2'
         self.platform_version = '8.3.11'
 
@@ -65,8 +68,11 @@ class Merger:
 
         except NotImplementedError as ex:
             raise MergeError(f'Ошибка объединения модулей {ex.args[0]}')
-
+        self.generate_settings()
         return self.merge_settings, self.object_list, self.list_files
+
+    def add_file_to_list(self, file_name: str):
+        self._files.append(file_name)
 
     def merge_objects(self, main_obj: mdclasses.ConfObject, obj: mdclasses.ConfObject):
         obj_modules = get_obj_module(obj)
@@ -81,91 +87,70 @@ class Merger:
                 main_module = None
                 self.add_module(main_obj, module)
 
+    def generate_settings(self):
+        self.generate_xml_merge_setting()
+        self.generate_xml_object_list()
+
+        self.list_files.write_text('\n'.join([str(file_name) for file_name in self._files]))
+
     def add_object_to_confs(self, obj: mdclasses.ConfObject):
         """
         Добавляет описание объекта в настройки (merge_settings, object_list)
         :param obj:
         :return:
         """
+        self._objects.append(obj)
 
-        self.add_obj_to_merge(obj)
-        self.add_obj_to_list(obj)
-
-    def add_obj_to_merge(self, obj: mdclasses.ConfObject):
-        data_settings = self.get_xml_struct_merge_setting()
-        objects = data_settings.find('Objects')
-
-        object = etree.Element(
-            'Object',
+    def generate_xml_merge_setting(self):
+        element = etree.Element(
+            'Settings',
             attrib={
-                'fullName': obj.full_name
+                "version": self.version,
+                "platformVersion": str(self.platform_version)
+            },
+            nsmap={
+                None: "http://v8.1c.ru/8.3/config/merge/settings",
+                "xs": "http://www.w3.org/2001/XMLSchema",
+                "xsi": "http://www.w3.org/2001/XMLSchema-instance",
             }
         )
-        merge_rule = etree.Element('MergeRule')
-        merge_rule.text = 'GetFromSecondConfiguration'
-        object.append(
-            merge_rule
-        )
-        objects.append(object)
-        self.merge_settings.write_bytes(
-            etree.tostring(data_settings, xml_declaration=False, encoding='utf-8')
-        )
+        e_params = etree.Element('Parameters')
 
-    def get_xml_struct_merge_setting(self) -> etree.ElementBase:
-        if self.merge_settings.exists():
-            return etree.fromstring(self.merge_settings.read_text('utf-8'))
-        else:
-            element = etree.Element(
-                'Settings',
+        e_param = etree.Element('ConfigurationsRelation')
+        e_param.text = 'SecondConfigurationIsDescendantOfMainConfiguration'
+        e_params.append(e_param)
+
+        e_param = etree.Element('AllowMainConfigurationObjectDeletion')
+        e_param.text = 'true'
+        e_params.append(e_param)
+
+        e_param = etree.Element('CopyObjectsMode')
+        e_param.text = 'false'
+        e_params.append(e_param)
+
+        element.append(e_params)
+
+        e_objects = etree.Element('Objects')
+        for obj in self._objects:
+            object = etree.Element(
+                'Object',
                 attrib={
-                    "version": self.version,
-                    "platformVersion": str(self.platform_version)
-                },
-                nsmap={
-                    None: "http://v8.1c.ru/8.3/config/merge/settings",
-                    "xs": "http://www.w3.org/2001/XMLSchema",
-                    "xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                    'fullName': obj.full_name
                 }
             )
-            e_params = etree.Element('Parameters')
-
-            e_param = etree.Element('ConfigurationsRelation')
-            e_param.text = 'SecondConfigurationIsDescendantOfMainConfiguration'
-            e_params.append(e_param)
-
-            e_param = etree.Element('AllowMainConfigurationObjectDeletion')
-            e_param.text = 'true'
-            e_params.append(e_param)
-
-            e_param = etree.Element('CopyObjectsMode')
-            e_param.text = 'false'
-            e_params.append(e_param)
-
-            element.append(e_params)
-
-            e_objects = etree.Element('Objects')
-            element.append(e_objects)
-            self.merge_settings.write_bytes(
-                etree.tostring(element, xml_declaration=True, encoding='utf-8')
+            merge_rule = etree.Element('MergeRule')
+            merge_rule.text = 'GetFromSecondConfiguration'
+            object.append(
+                merge_rule
             )
-            return element
+            e_objects.append(object)
 
-    def add_obj_to_list(self, obj: mdclasses.ConfObject):
-        data_obj_list = self.get_xml_struct_object_list()
-        objects = data_obj_list
-
-        objects.append(etree.Element(
-            'Object',
-            attrib={
-                'fullName': obj.full_name,
-                'includeChildObjects': 'true'
-            }
-        ))
-        self.object_list.write_bytes(
-            etree.tostring(data_obj_list, xml_declaration=False, encoding='utf-8')
+        element.append(e_objects)
+        self.merge_settings.write_bytes(
+            etree.tostring(element, xml_declaration=True, encoding='utf-8')
         )
 
-    def get_xml_struct_object_list(self) -> etree.ElementBase:
+    def generate_xml_object_list(self):
         if self.object_list.exists():
             return etree.fromstring(self.object_list.read_bytes())
         else:
@@ -178,11 +163,18 @@ class Merger:
                     None: "http://v8.1c.ru/8.3/config/objects"
                 }
             )
+            for obj in self._objects:
+                element.append(etree.Element(
+                    'Object',
+                    attrib={
+                        'fullName': obj.full_name,
+                        'includeChildObjects': 'true'
+                    }
+                ))
 
             self.object_list.write_bytes(
                 etree.tostring(element, xml_declaration=False, encoding='utf-8')
             )
-            return element
 
     def merge_module(self, receiver: mdclasses.Module, source: mdclasses.Module):
         for proc in source.procedures():
@@ -194,6 +186,8 @@ class Merger:
         for func in source.functions():
             if func.expansion_modifier is None:
                 continue
+            main_func = receiver.find_sub_program(func.expansion_modifier.sub_program_name)
+            self.merge_procedure(main_func, func)
 
         insert_text_to_module(
             receiver,
@@ -211,6 +205,8 @@ class Merger:
             0,
             0
         )
+
+        self.add_file_to_list(str(source.file_name))
 
     def merge_procedure(self, resiver: mdclasses.Procedure, sourse: mdclasses.Procedure):
         modifier_type = sourse.expansion_modifier.modifier_type
@@ -271,7 +267,7 @@ class Merger:
         if not obj.ext_path.exists():
             obj.ext_path.mkdir()
         shutil.copyfile(module.file_name, obj.ext_path.joinpath(module.file_name.name))
-        self.list_files.write_text(str(obj.ext_path.joinpath(module.file_name.name)))
+        self.add_file_to_list(str(obj.ext_path.joinpath(module.file_name.name)))
 
     def clear_temp(self):
         clear_folder(self._temp_dir)

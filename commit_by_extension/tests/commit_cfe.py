@@ -7,7 +7,6 @@ import shutil
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
-logging.root.removeHandler(logging.root.handlers[0])
 logging.root.addHandler(logging.StreamHandler())
 
 
