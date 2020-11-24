@@ -8,7 +8,12 @@ from commit_by_extension.merging import Merger, MergeError
 from multiprocessing import Process
 
 handlers = [logging.FileHandler('./working.log', encoding='utf-8')]
-logging.basicConfig(level=logging.INFO, handlers=handlers)
+logging.basicConfig(
+    level=logging.INFO,
+    handlers=handlers,
+    format='%(levelname)s|%(asctime)s|%(name)s|%(funcName)s|%(message)s',
+    datefmt='%d-%b-%y %H:%M:%S'
+)
 logger = logging.getLogger(__name__)
 
 
@@ -37,7 +42,9 @@ def main(config: conf.Config):
     tmp_designer.dump_extensions_to_files(extension_xml_dir)
     logger.info(f'Окнончание выгрузки расширений в xml')
 
-    result = p.join()
+    p.join()
+    if p.exitcode != 0:
+        raise MergeError('Ошибка выполнения.')
 
     conf_dump = main_xml_path.joinpath('ConfigDumpInfo.xml')
     if conf_dump.exists():

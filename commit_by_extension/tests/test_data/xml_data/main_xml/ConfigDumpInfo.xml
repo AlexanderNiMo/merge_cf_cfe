@@ -1,18 +1,22 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ConfigDumpInfo xmlns="http://v8.1c.ru/8.3/xcf/dumpinfo" xmlns:xen="http://v8.1c.ru/8.3/xcf/enums" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" format="Hierarchical" version="2.11">
 	<ConfigVersions>
-		<Metadata name="Catalog.Справочник1" id="aae2cd14-fe41-4c4c-a8a2-f97c0850a6d1" configVersion="bff6a58496e42245aca930abe86a32e300000000"/>
-		<Metadata name="Catalog.Справочник1.ManagerModule" id="aae2cd14-fe41-4c4c-a8a2-f97c0850a6d1.3" configVersion="79571710ec8271468d9a00ecfca77fea00000000"/>
-		<Metadata name="Catalog.Справочник1.ObjectModule" id="aae2cd14-fe41-4c4c-a8a2-f97c0850a6d1.0" configVersion="6b528bea1f297f4194745eb5d971ddf300000000"/>
-		<Metadata name="Catalog.Справочник2" id="5b2d8eea-eb80-467f-a5b8-56fc4200513c" configVersion="9e965bfb330af4429a06e3ce90e8200d00000000"/>
-		<Metadata name="Catalog.Справочник2.Form.ФормаЭлемента" id="214d709e-3889-44be-9d19-962d08e4f2f3" configVersion="223f71bbfc08b84d8e6e2d6b1bf45b6a00000000"/>
-		<Metadata name="Catalog.Справочник2.Form.ФормаЭлемента.Form" id="214d709e-3889-44be-9d19-962d08e4f2f3.0" configVersion="a28f35d3dfd48b48aedd06ce68b822bd00000000"/>
-		<Metadata name="Catalog.Справочник3" id="42e6ba89-19da-4f4a-afa9-cb8fff6ca1d4" configVersion="c1511bc2facf6c47b1ad6a3e61e6edb500000000"/>
-		<Metadata name="Catalog.Справочник3.Form.ФормаЭлемента" id="399dbbd0-4d76-4f16-b78c-968a48b4de68" configVersion="6e316ddefdb8864ba98b0a0f3a5bd15300000000"/>
-		<Metadata name="Catalog.Справочник3.Form.ФормаЭлемента.Form" id="399dbbd0-4d76-4f16-b78c-968a48b4de68.0" configVersion="742cc48181c6d64eb504e327c02b48bb00000000"/>
-		<Metadata name="CommonModule.ОбщийМодуль1" id="c93c4439-f029-4ffd-9e3e-2abc55028295" configVersion="95e8564ffe6de64194adf5b0ae946edb00000000"/>
-		<Metadata name="CommonModule.ОбщийМодуль1.Module" id="c93c4439-f029-4ffd-9e3e-2abc55028295.0" configVersion="99a9c5da63b0ec44ac174a656a6984ae00000000"/>
-		<Metadata name="Configuration.Конфигурация" id="5dcd9dc2-55b3-4253-8556-b8bae01463f3" configVersion="a611c5c8fb26d741a48a020f89a2783800000000"/>
-		<Metadata name="Language.Русский" id="aaf39861-4bf6-4ace-8df5-5b65343f51fc" configVersion="624af37f0db0a74f8ae9099cac1f8afd00000000"/>
+		<Metadata name="Catalog.Справочник1" id="aae2cd14-fe41-4c4c-a8a2-f97c0850a6d1" configVersion="6ddf66317e77ba41aead4eabb6dd56f700000000"/>
+		<Metadata name="Catalog.Справочник1.ManagerModule" id="aae2cd14-fe41-4c4c-a8a2-f97c0850a6d1.3" configVersion="a50a43fe782d6f4f85043d0c255edd8700000000"/>
+		<Metadata name="Catalog.Справочник1.ObjectModule" id="aae2cd14-fe41-4c4c-a8a2-f97c0850a6d1.0" configVersion="f25864ee4d35ec44be3abb30e9ff8a4b00000000"/>
+		<Metadata name="Catalog.Справочник2" id="5b2d8eea-eb80-467f-a5b8-56fc4200513c" configVersion="1b8951ba76abdb47876d83850438dd7f00000000"/>
+		<Metadata name="Catalog.Справочник2.Form.ФормаСписка" id="385c8596-0be6-41a9-9a9f-9b9d104ed898" configVersion="8e28572e83885645969d25b84a199ccc00000000"/>
+		<Metadata name="Catalog.Справочник2.Form.ФормаСписка.Form" id="385c8596-0be6-41a9-9a9f-9b9d104ed898.0" configVersion="3a8bf1dd408c864fa41b66ab358d5d2c00000000"/>
+		<Metadata name="Catalog.Справочник2.Form.ФормаЭлемента" id="214d709e-3889-44be-9d19-962d08e4f2f3" configVersion="7ed6d7c3504c0c499cc3d52313449a7200000000"/>
+		<Metadata name="Catalog.Справочник2.Form.ФормаЭлемента.Form" id="214d709e-3889-44be-9d19-962d08e4f2f3.0" configVersion="39ec11c3e33e7a4b991218e82579b8d600000000"/>
+		<Metadata name="Catalog.Справочник3" id="42e6ba89-19da-4f4a-afa9-cb8fff6ca1d4" configVersion="dcba18d6d402534cbfd103864dc9a6b000000000"/>
+		<Metadata name="Catalog.Справочник3.Form.ФормаЭлемента" id="399dbbd0-4d76-4f16-b78c-968a48b4de68" configVersion="dfc4581097302e42959c9a8784514ff400000000"/>
+		<Metadata name="Catalog.Справочник3.Form.ФормаЭлемента.Form" id="399dbbd0-4d76-4f16-b78c-968a48b4de68.0" configVersion="98eff032813bb9449bce6d2e46d113ba00000000"/>
+		<Metadata name="CommonModule.ОбщийМодуль1" id="c93c4439-f029-4ffd-9e3e-2abc55028295" configVersion="66f837df812b9d4897d0a507bf7b7d9000000000"/>
+		<Metadata name="CommonModule.ОбщийМодуль1.Module" id="c93c4439-f029-4ffd-9e3e-2abc55028295.0" configVersion="ae9222e41b247240956b6366ac2c95cf00000000"/>
+		<Metadata name="Configuration.Конфигурация" id="1996326a-5156-4eb1-a9fe-5db6ab532426" configVersion="8a49f64278342c4fb51bac0e14748abe00000000"/>
+		<Metadata name="Language.Русский" id="db782936-9c10-4a51-acab-ca941d0dabd6" configVersion="b8e447a138823b48bb31a5aae044f54100000000"/>
+		<Metadata name="Role.Роль1" id="dc8b8ba4-3ce3-46af-b00b-cf6ca346ef72" configVersion="a6bb048e9d1cde4699c0b720511189a700000000"/>
+		<Metadata name="Role.Роль1.Rights" id="dc8b8ba4-3ce3-46af-b00b-cf6ca346ef72.0" configVersion="7b1647a9059adf4eb75089a0be73f15400000000"/>
 	</ConfigVersions>
 </ConfigDumpInfo>

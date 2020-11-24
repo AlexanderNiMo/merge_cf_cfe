@@ -67,10 +67,10 @@ class MainTest(unittest.TestCase):
         tmp_designer, extension_xml_dir = commit.prepare_env(
             self.config.temp_dir, self.config.platform_version)
 
-        self.assertTrue(Path(extension_xml_dir).exists(), 'Не создана папка для выгрузки'
-                                                          ' основной конфы в xml')
-        self.assertTrue(Path(f'{self.config.temp_dir}/tmp_base').exists(), 'Не создана папка для базы'
-                                                                           ' основной конфы в xml')
+        self.assertTrue(Path(extension_xml_dir).exists(), 'Не создана папка для выгрузки основной конфы в xml')
+        self.assertTrue(
+            Path(f'{self.config.temp_dir}/tmp_base').exists(),
+            'Не создана папка для базы основной конфы в xml')
 
     def test_main(self):
         commit.main(self.config)
@@ -117,6 +117,7 @@ class TestMerging(unittest.TestCase):
         test_module = ext_module.modules[0]
 
         merger.add_module(obj, test_module)
+        merger.generate_settings()
 
         new_path = obj.ext_path.joinpath(test_module.file_name.name)
 
@@ -127,6 +128,7 @@ class TestMerging(unittest.TestCase):
         utils.clear_folder(self.tmp_cf_xml)
         self.tmp_cf_xml.rmdir()
         utils.clear_folder(self.temp_dir)
+        self.temp_dir.rmdir()
 
 
 if __name__ == '__main__':
